@@ -3,7 +3,7 @@ Create a new environment named `mypanelintro` with all the required packages by 
 ```
 conda create -n mypanelintro
 conda activate mypanelintro
-conda install -c pyviz panel notebook
+conda install -c conda-forge panel ipyleaflet jupyter
 ```
 
 ## Launch Jupyter Notebook as a Web Server
@@ -16,3 +16,4 @@ conda install -c pyviz panel notebook
 [Panel Components](https://panel.holoviz.org/user_guide/Components.html)\
 [Panel Dashboards Introduction](https://youtu.be/AXpjbJUVeb4)\
 [Python Introduction to Panel Widgets and Dashboards](https://youtu.be/ulHnNXNmuig)
+[ipyleaflet Documentation](https://ipyleaflet.readthedocs.io/en/latest/index.html)
