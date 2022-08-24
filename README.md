@@ -3,7 +3,8 @@ Create a new environment named `mypanelintro` with all the required packages by 
 ```
 conda create -n mypanelintro
 conda activate mypanelintro
-conda install -c bokeh "ipywidgets_bokeh<8" -y
+conda install "ipywidgets<8" -y
+conda install -c bokeh ipywidgets_bokeh -y
 conda install -c conda-forge panel ipyleaflet jupyter -y
 ```
 
