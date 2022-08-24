@@ -2,6 +2,7 @@
 Create a new environment named `mypanelintro` with all the required packages by entering the following commands in succession into Anaconda Prompt (Windows) or Terminal (Mac/Linux):
 ```
 conda create -n mypanelintro
+jupyter labextension install @jupyter-widgets/jupyterlab-manager jupyter-leaflet
 conda activate mypanelintro
 conda install -c conda-forge panel ipyleaflet jupyter
 ```
