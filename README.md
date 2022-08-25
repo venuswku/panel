@@ -1,5 +1,6 @@
 ## Create an Environment with Anaconda
-Create a new environment named `mypanelintro` with all the required packages by entering the following commands in succession into Anaconda Prompt (Windows) or Terminal (Mac/Linux):
+Create a new environment named `mypanelintro` with all the required packages by entering the following commands in succession into Anaconda Prompt (Windows) or Terminal (Mac/Linux):\
+Skip the command `conda install "ipywidgets<8" -y` if you installed Panel with a version >= `0.14.0`.
 ```
 conda create -n mypanelintro
 conda activate mypanelintro
@@ -13,7 +14,7 @@ conda install -c conda-forge panel ipyleaflet jupyter -y
 - Run the command `panel serve --show --autoreload app.ipynb` in your terminal.
 - A webpage with the URL http://localhost:5006/app will display all Panel objects marked with `.servable()`.
 - Any changes in the notebook will automatically be reflected on the webpage.
-- In order to serve on a webpage, make sure the installed `ipywidgets` package in your environment is lower than version `8`.
+- If you installed Panel with a version lower than `0.14.0`, make sure the installed `ipywidgets` package in your environment is lower than version `8.0.1`.
   - See reason for `ipywidgets<8` here: https://github.com/holoviz/panel/issues/3778#issue-1349757718.
   - Check the version of your installed packages by running `conda list`.
 
