@@ -14,6 +14,7 @@ conda install -c conda-forge panel ipyleaflet jupyter -y
 - A webpage with the URL http://localhost:5006/app will display all Panel objects marked with `.servable()`.
 - Any changes in the notebook will automatically be reflected on the webpage.
 - In order to serve on a webpage, make sure the installed `ipywidgets` package in your environment is lower than version `8`.
+  - See reason for `ipywidgets<8` here: https://github.com/holoviz/panel/issues/3778#issue-1349757718.
   - Check the version of your installed packages by running `conda list`.
 
 ## Learning Resources
