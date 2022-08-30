@@ -19,6 +19,7 @@ conda install -c conda-forge panel ipyleaflet jupyter -y
   - Check the version of your installed packages by running `conda list`.
 
 ## Learning Resources
+[Panel Widgets](https://panel.holoviz.org/user_guide/Widgets.html)\
 [Panel Components](https://panel.holoviz.org/user_guide/Components.html)\
 [Panel Dashboards Introduction](https://youtu.be/AXpjbJUVeb4)\
 [Python Introduction to Panel Widgets and Dashboards](https://youtu.be/ulHnNXNmuig)
