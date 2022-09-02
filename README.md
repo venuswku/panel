@@ -23,4 +23,5 @@ conda install -c conda-forge panel ipyleaflet jupyter -y
 [Panel Components](https://panel.holoviz.org/user_guide/Components.html)\
 [Panel Dashboards Introduction](https://youtu.be/AXpjbJUVeb4)\
 [Python Introduction to Panel Widgets and Dashboards](https://youtu.be/ulHnNXNmuig)
-[ipyleaflet Documentation](https://ipyleaflet.readthedocs.io/en/latest/index.html)
+[ipyleaflet Documentation](https://ipyleaflet.readthedocs.io/en/latest/index.html)\
+[`data` folder's GeoJSON files](https://zenodo.org/record/7033367)
