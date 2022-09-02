@@ -4,9 +4,12 @@ Skip the command `conda install "ipywidgets<8" -y` if you installed Panel with a
 ```
 conda create -n mypanelintro
 conda activate mypanelintro
+# Install Panel dependencies.
 conda install "ipywidgets<8" -y
 conda install -c bokeh ipywidgets_bokeh -y
-conda install -c conda-forge panel ipyleaflet jupyter -y
+conda install -c conda-forge panel -y
+# Install other optional dependencies for experimenting with Panel.
+conda install -c conda-forge ipyleaflet jupyter -y
 ```
 
 ## Launch Jupyter Notebook as a Web Server
