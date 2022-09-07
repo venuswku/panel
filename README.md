@@ -9,8 +9,8 @@ conda install "ipywidgets<8" -y
 conda install -c bokeh ipywidgets_bokeh -y
 conda install -c conda-forge panel -y
 # Install other optional dependencies for experimenting with Panel.
-conda install -c conda-forge ipyleaflet jupyter -y
-conda install pandas -y
+conda install -c conda-forge ipyleaflet jupyter pandas geopandas -y
+conda install -c pyviz hvplot -y
 ```
 
 ## Launch Jupyter Notebook as a Web Server
@@ -29,4 +29,5 @@ conda install pandas -y
 [Python Introduction to Panel Widgets and Dashboards](https://youtu.be/ulHnNXNmuig)
 [ipyleaflet Documentation](https://ipyleaflet.readthedocs.io/en/latest/index.html)\
 [`data` folder's GeoJSON files](https://zenodo.org/record/7033367)\
-[Sample `csv` (Comma Separated Values, aka Excel) File from CoastTrain](https://github.com/dbuscombe-usgs/CoastTrainMetaPlots/tree/main/metadata)
+[Sample `csv` (Comma Separated Values, aka Excel) File from CoastTrain](https://github.com/dbuscombe-usgs/CoastTrainMetaPlots/tree/main/metadata)\
+[Sample Data from `bokeh`](https://docs.bokeh.org/en/latest/docs/reference/sampledata.html)
