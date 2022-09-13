@@ -86,7 +86,51 @@ Note: I figure out answers to some of my questions as I go through the rest of t
 ## [4_Creation of `config` files](https://github.com/Doodleverse/segmentation_gym/wiki/4_Creation-of-%60config%60-files)
 > The model consists of the `config` file, the `.h5` weights file, and the code that executes the model. Inside this repository, that code is called `seg_images_in_folder.py` but is just one form of relatively simple implementation of basic trained model or sensemble of trained models. Further implementation.
 - Were you going to talk about "Further implementation" but just forgot to?
-> `LOSS`: one of `cat` (categorical cross-entropy), `dice` (Dice loss), `hinge` (hinge loss), or `kld` (Kullback-Leibler divergence)
+> Example contents of a config file:
+> ```
+> {
+>   "TARGET_SIZE": [768,768],
+>   "MODEL": "resunet",
+>   "NCLASSES": 4,
+>   "BATCH_SIZE": 7,
+>   "N_DATA_BANDS": 3,
+>   "DO_TRAIN": true,
+>   "PATIENCE": 10,
+>   "MAX_EPOCHS": 100,
+>    "VALIDATION_SPLIT": 0.2,
+>   "FILTERS":8,
+>   "KERNEL":7,
+>   "STRIDE":1,
+>   "DROPOUT":0.1,
+>   "DROPOUT_CHANGE_PER_LAYER":0.0,
+>   "DROPOUT_TYPE":"standard",
+>   "USE_DROPOUT_ON_UPSAMPLING":false,
+>   "ROOT_STRING": "hatteras_l8_aug_768",
+>   "FILTER_VALUE": 3,
+>   "DOPLOT": true,
+>   "USEMASK": false,
+>   "RAMPUP_EPOCHS": 10,
+>   "SUSTAIN_EPOCHS": 0.0,
+>   "EXP_DECAY": 0.9,
+>   "START_LR":  1e-7,
+>   "MIN_LR": 1e-7,
+>   "MAX_LR": 1e-4,
+>   "AUG_ROT": 0,
+>   "AUG_ZOOM": 0.05,
+>   "AUG_WIDTHSHIFT": 0.05,
+>   "AUG_HEIGHTSHIFT": 0.05,
+>   "AUG_HFLIP": false,
+>   "AUG_VFLIP": false,
+>   "AUG_LOOPS": 1,
+>   "AUG_COPIES": 3,
+>   "TESTTIMEAUG": false,
+>   "SET_GPU": "0",
+>   "do_crf": true  
+> }
+> ```
+> ...
+> ### [Model Training configs](https://github.com/Doodleverse/segmentation_gym/wiki/4_Creation-of-%60config%60-files#model-training-configs)
+> - `LOSS`: one of `cat` (categorical cross-entropy), `dice` (Dice loss), `hinge` (hinge loss), or `kld` (Kullback-Leibler divergence)
 - Is `LOSS` an optional training configuration since it's not in the sample config file?
 - Super helpful to explain each configuration in the example!
 
