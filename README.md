@@ -22,6 +22,13 @@ conda install -c pyviz hvplot -y
   - See reason for `ipywidgets<8` here: https://github.com/holoviz/panel/issues/3778#issue-1349757718.
   - Check the version of your installed packages by running `conda list`.
 
+## Launch Jupyter Notebook
+- Make sure your Anaconda environment is activated by running `conda activate mypanelintro` in your terminal.
+- Run the command `jupyter notebook` in your terminal.
+- Open the `app.ipynb` file when a webpage with the URL  appears.
+- Run all the notebook cells from top to bottom. The Panel app will be outputted after the last cell is run.
+- Reload the `app.ipynb` webpage when you want to see your new changes.
+
 ## Learning Resources
 [Panel Widgets](https://panel.holoviz.org/user_guide/Widgets.html)\
 [Panel Components](https://panel.holoviz.org/user_guide/Components.html)\
@@ -30,4 +37,6 @@ conda install -c pyviz hvplot -y
 [ipyleaflet Documentation](https://ipyleaflet.readthedocs.io/en/latest/index.html)\
 [`data` folder's GeoJSON files](https://zenodo.org/record/7033367)\
 [Sample `csv` (Comma Separated Values, aka Excel) File from CoastTrain](https://github.com/dbuscombe-usgs/CoastTrainMetaPlots/tree/main/metadata)\
-[Sample Data from `bokeh`](https://docs.bokeh.org/en/latest/docs/reference/sampledata.html)
+[Sample Data from `bokeh`](https://docs.bokeh.org/en/latest/docs/reference/sampledata.html)\
+[Elwha Topo-Bathy Data](https://www.sciencebase.gov/catalog/item/5a01f6d0e4b0531197b72cfe)\
+[Folium](https://github.com/python-visualization/folium)
