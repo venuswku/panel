@@ -17,7 +17,7 @@ conda install -c pyviz hvplot -y
 - Make sure your Anaconda environment is activated by running `conda activate mypanelintro` in your terminal.
 - Run the command `panel serve --show --autoreload app.ipynb` in your terminal.
 - A webpage with the URL http://localhost:5006/app will display all Panel objects marked with `.servable()`.
-- Any changes in the notebook will automatically be reflected on the webpage.
+- Any changes in the notebook will automatically be reflected on the webpage. Just in case, refresh the webpage to make sure you see your latest changes.
 - If you installed Panel with a version lower than `0.14.0`, make sure the installed `ipywidgets` package in your environment is lower than version `8.0.1`.
   - See reason for `ipywidgets<8` here: https://github.com/holoviz/panel/issues/3778#issue-1349757718.
   - Check the version of your installed packages by running `conda list`.
@@ -25,9 +25,9 @@ conda install -c pyviz hvplot -y
 ## Launch Jupyter Notebook
 - Make sure your Anaconda environment is activated by running `conda activate mypanelintro` in your terminal.
 - Run the command `jupyter notebook` in your terminal.
-- Open the `app.ipynb` file when a webpage with the URL  appears.
+- Open the `app.ipynb` file when a webpage with the URL http://localhost:8888/tree appears.
 - Run all the notebook cells from top to bottom. The Panel app will be outputted after the last cell is run.
-- Reload the `app.ipynb` webpage when you want to see your new changes.
+- Reload the [`app.ipynb` webpage](http://localhost:8888/notebooks/app.ipynb) when you want to see your new changes.
 
 ## Learning Resources
 [Panel Widgets](https://panel.holoviz.org/user_guide/Widgets.html)\
