@@ -34,9 +34,10 @@ conda install -c pyviz hvplot -y
 [Panel Components](https://panel.holoviz.org/user_guide/Components.html)\
 [Panel Dashboards Introduction](https://youtu.be/AXpjbJUVeb4)\
 [Python Introduction to Panel Widgets and Dashboards](https://youtu.be/ulHnNXNmuig)
-[ipyleaflet Documentation](https://ipyleaflet.readthedocs.io/en/latest/index.html)\
+[`ipyleaflet` Documentation](https://ipyleaflet.readthedocs.io/en/latest/index.html)\
 [`data` folder's GeoJSON files](https://zenodo.org/record/7033367)\
 [Sample `csv` (Comma Separated Values, aka Excel) File from CoastTrain](https://github.com/dbuscombe-usgs/CoastTrainMetaPlots/tree/main/metadata)\
 [Sample Data from `bokeh`](https://docs.bokeh.org/en/latest/docs/reference/sampledata.html)\
 [Elwha Topo-Bathy Data](https://www.sciencebase.gov/catalog/item/5a01f6d0e4b0531197b72cfe)\
-[Folium](https://github.com/python-visualization/folium)
+[Folium](https://github.com/python-visualization/folium)\
+[`datetime`](https://docs.python.org/3/library/datetime.html#datetime-objects)
