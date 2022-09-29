@@ -1,4 +1,4 @@
-from ipyleaflet import Map, basemaps, basemap_to_tiles, GeoJSON, LayersControl, Popup, FullScreenControl, ScaleControl, LegendControl
+from ipyleaflet import Map, basemaps, basemap_to_tiles, GeoJSON, Popup, LayersControl, FullScreenControl, LegendControl
 from collections import defaultdict
 from ipywidgets import Layout, HTML
 import pandas as pd
@@ -24,7 +24,7 @@ class DataMap:
             "style": {"color": "black", "opacity": 0.5, "radius": 1},
             "hover_style": {"color": "red", "opacity": 1, "radius": 2}
           },
-          "file3.txt": {}     # keeps ipyleaflet's default feature styling
+          "file3.txt": {}     # empty dictionary keeps ipyleaflet's default feature styling
         }
         ^ Make sure keys in data[file] match a GeoJSON attribute (https://ipyleaflet.readthedocs.io/en/latest/layers/geo_json.html#attributes-and-methods) and values are dictionaries {}.
       map_center (tuple): (Latitude, Longitude) tuple specifying the center of the map
@@ -37,7 +37,6 @@ class DataMap:
       zoom = 15, max_zoom = 18, layout = Layout(height="100vh")
     )
 
-    self.map.add_control(ScaleControl(position="bottomleft"))
     if legend:
       self.map.add_control(
         LegendControl(
@@ -78,10 +77,6 @@ class DataMap:
     for name, basemap in basemap_options.items():
       tile_layer = basemap_to_tiles(basemap)
       tile_layer.show_loading, tile_layer.name = True, name
-      # # When the default tile/basemap layer finishes loading, filter for the default selected data type layers.
-      # if name == basemap_select.value: tile_layer.on_load(filter_data_on_map)
-      # # Make the other unselected basemaps invisible.
-      # else: tile_layer.visible = False
       tile_layer.visible = False
       self.map.add_layer(tile_layer)
       self.all_layers[name] = tile_layer
@@ -210,29 +205,6 @@ class DataMap:
         self.all_layers[name] = layer
         self.geojsons[name] = geojson
         break
-    
-    # dataframe = pd.read_csv(data_path)
-    # geodataframe = geopandas.GeoDataFrame(
-    #   dataframe,
-    #   geometry = geopandas.points_from_xy(
-    #     self.get_dataframe_col(longitude_col_names, dataframe),
-    #     self.get_dataframe_col(latitude_col_names, dataframe),
-    #     crs = "EPSG:4326"
-    #   )
-    # )
-    # geojson_str = geodataframe.to_json()
-    # geojson = GeoJSON(
-    #   data = json.loads(geojson_str),
-    #   point_style = point_style,
-    #   hover_style = hover_style,
-    #   name = name
-    # )
-    # # Add mouse event handlers.
-    # geojson.on_click(lambda feature, **kwargs: self.display_popup_info(popup_content, feature))
-    # geojson.on_hover(lambda feature, **kwargs: self.display_popup_info(popup_content, feature))
-    # # Add GeoJSON layer to map and save it.
-    # self.map.add_layer(geojson)
-    # self.all_layers[name] = geojson
 
     # Group data from the same location into clusters.
     # marker_cluster, cluster_location = MarkerCluster(name="Clusters"), None
@@ -287,7 +259,5 @@ class DataMap:
     newly_selected_basemap = event.new
     for basemap_name in self.basemaps:
       basemap_tile_layer = self.all_layers[basemap_name]
-      # # Remove the filtering data callback function (only need to execute it once at the beginning of loading the default basemap).
-      # basemap_tile_layer.on_load(callback=filter_data_on_map, remove=True)
       if basemap_tile_layer.name == newly_selected_basemap: basemap_tile_layer.visible = True
       else: basemap_tile_layer.visible = False
