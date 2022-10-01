@@ -10,7 +10,7 @@ conda install -c bokeh ipywidgets_bokeh -y
 conda install -c conda-forge panel -y
 # Install other optional dependencies for experimenting with Panel.
 conda install -c conda-forge ipyleaflet jupyter pandas geopandas -y
-conda install -c pyviz hvplot -y
+conda install -c pyviz hvplot bokeh -y
 ```
 
 ## Launch Jupyter Notebook as a Web Server
@@ -30,14 +30,24 @@ conda install -c pyviz hvplot -y
 - Reload the [`app.ipynb` webpage](http://localhost:8888/notebooks/app.ipynb) when you want to see your new changes.
 
 ## Learning Resources
-[Panel Widgets](https://panel.holoviz.org/user_guide/Widgets.html)\
-[Panel Components](https://panel.holoviz.org/user_guide/Components.html)\
-[Panel Dashboards Introduction](https://youtu.be/AXpjbJUVeb4)\
-[Python Introduction to Panel Widgets and Dashboards](https://youtu.be/ulHnNXNmuig)
-[`ipyleaflet` Documentation](https://ipyleaflet.readthedocs.io/en/latest/index.html)\
-[`data` folder's GeoJSON files](https://zenodo.org/record/7033367)\
-[Sample `csv` (Comma Separated Values, aka Excel) File from CoastTrain](https://github.com/dbuscombe-usgs/CoastTrainMetaPlots/tree/main/metadata)\
-[Sample Data from `bokeh`](https://docs.bokeh.org/en/latest/docs/reference/sampledata.html)\
-[Elwha Topo-Bathy Data](https://www.sciencebase.gov/catalog/item/5a01f6d0e4b0531197b72cfe)\
-[Folium](https://github.com/python-visualization/folium)\
-[`datetime`](https://docs.python.org/3/library/datetime.html#datetime-objects)
+Panel
+- [Widgets](https://panel.holoviz.org/user_guide/Widgets.html)
+- [Components](https://panel.holoviz.org/user_guide/Components.html)
+- [Dashboards Introduction](https://youtu.be/AXpjbJUVeb4)
+- [Python Introduction to Panel Widgets and Dashboards](https://youtu.be/ulHnNXNmuig)
+
+`data` Folder
+- [`data` Folder's GeoJSON Files](https://zenodo.org/record/7033367)
+- [Sample `csv` (Comma Separated Values, aka Excel) File from CoastTrain](https://github.com/dbuscombe-usgs/CoastTrainMetaPlots/tree/main/metadata)
+- [Sample Data from `bokeh`](https://docs.bokeh.org/en/latest/docs/reference/sampledata.html)
+- [Elwha Topo-Bathy Data](https://www.sciencebase.gov/catalog/item/5a01f6d0e4b0531197b72cfe)
+
+`bokeh.plotting`
+- [`figure()` Documentation](https://docs.bokeh.org/en/latest/docs/reference/plotting/figure.html)
+- [Plotting `pandas` DataFrame with `bokeh.plotting`](https://programminghistorian.org/en/lessons/visualizing-with-bokeh#the-bokeh-columndatasource)
+- [Modifying Markers in Scatter Plot](https://docs.bokeh.org/en/2.4.0/docs/user_guide/data.html#mapping-marker-types)
+- [`scatter()` to Use Built-In Markers](https://docs.bokeh.org/en/latest/docs/reference/models/glyphs/scatter.html)
+
+Other Documentation
+- [`ipyleaflet`](https://ipyleaflet.readthedocs.io/en/latest/index.html)
+- [`datetime`](https://docs.python.org/3/library/datetime.html#datetime-objects)

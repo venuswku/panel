@@ -34,7 +34,7 @@ class DataMap:
     # map = map containing data that user wants to visualize
     self.map = Map(
       center = map_center,
-      zoom = 15, max_zoom = 18, layout = Layout(height="100vh")
+      zoom = 15, max_zoom = 18, layout = Layout(height="calc(100vh - 94px)")
     )
 
     if legend:
@@ -73,7 +73,7 @@ class DataMap:
 
     # basemaps = list containing all basemap names that the user could choose from
     self.basemaps = basemap_options.keys()
-    # Add all basemaps to the map first in order to update the visibility of their tile layers later.
+    # Add all basemaps to the map first in order to update the visibility of their tile layers even after the map is rendered.
     for name, basemap in basemap_options.items():
       tile_layer = basemap_to_tiles(basemap)
       tile_layer.show_loading, tile_layer.name = True, name
@@ -172,7 +172,7 @@ class DataMap:
   
   def create_geojson(self, data_path: str, name: str, popup_content: dict, longitude_col_names: list[str], latitude_col_names: list[str]) -> None:
     """
-    Creates and displays a GeoJSON layer containing data points on the map.
+    Creates and displays a GeoJSON layer containing data points (at most 200 points per layer) on the map.
 
     Args:
       data_path (str): Path to the file that contains the layer's data points
@@ -186,6 +186,10 @@ class DataMap:
       if layer.name == name:
         # Convert the data file into a GeoJSON.
         dataframe = pd.read_csv(data_path)
+        # Get a random sample of 200 data points because large datasets lead to low performance and overcrowded data points.
+        max_data_points = 200
+        if len(dataframe.index) > max_data_points:
+          dataframe = dataframe.sample(max_data_points)
         geodataframe = geopandas.GeoDataFrame(
           dataframe,
           geometry = geopandas.points_from_xy(
