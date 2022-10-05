@@ -51,3 +51,4 @@ Panel
 Other Documentation
 - [`ipyleaflet`](https://ipyleaflet.readthedocs.io/en/latest/index.html)
 - [`datetime`](https://docs.python.org/3/library/datetime.html#datetime-objects)
+- [`ipywidgets`](https://ipywidgets.readthedocs.io/en/7.x/)

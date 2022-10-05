@@ -1,17 +1,18 @@
 from ipyleaflet import Map, basemaps, basemap_to_tiles, GeoJSON, Popup, LayersControl, FullScreenControl, LegendControl
 from collections import defaultdict
-from ipywidgets import Layout, HTML
+from ipywidgets import Layout, HTML, VBox
 import pandas as pd
 import geopandas
 import json
 import math
+from DataPlotter import DataPlotter
 
 empty_geojson_name = "no_data"
 
-class DataMap:
-  def __init__(self, data: dict, map_center: tuple = (0, 0), basemap_options: dict = {"Default": basemaps.OpenStreetMap.Mapnik}, legend: dict = None) -> None:
+class DataVisualizer:
+  def __init__(self, data: dict, map_center: tuple = (0, 0), basemap_options: dict = {"Default": basemaps.OpenStreetMap.Mapnik}, view_data_button: "ipywidgets.Button" = None, legend: dict = None) -> None:
     """
-    Creates a new instance of the DataMap class.
+    Creates a new instance of the DataVisualizer class with its instance variables.
 
     Args:
       data (dict): Dictionary mapping names of data files (keys) to their optional styling on a GeoJSON layer (values)
@@ -27,17 +28,16 @@ class DataMap:
           "file3.txt": {}     # empty dictionary keeps ipyleaflet's default feature styling
         }
         ^ Make sure keys in data[file] match a GeoJSON attribute (https://ipyleaflet.readthedocs.io/en/latest/layers/geo_json.html#attributes-and-methods) and values are dictionaries {}.
-      map_center (tuple): (Latitude, Longitude) tuple specifying the center of the map
-      basemap_options (dict): Dictionary mapping basemap names (keys) to basemap layers (values)
+      map_center (tuple): Optional (Latitude, Longitude) tuple specifying the center of the map
+      basemap_options (dict): Optional dictionary mapping basemap names (keys) to basemap layers (values)
+      view_data_button ("ipywidgets.Button"): Optional button displayed in the popup of a hovered/clicked data point
     """
-
     # map = map containing data that user wants to visualize
     self.map = Map(
       center = map_center,
       zoom = 15, max_zoom = 18, layout = Layout(height="calc(100vh - 94px)")
     )
-
-    if legend:
+    if legend is not None:
       self.map.add_control(
         LegendControl(
           name = legend["name"],
@@ -49,12 +49,17 @@ class DataMap:
     self.map.add_control(LayersControl(position="topright"))
 
     # popup = popup that displays information about a data point
+    popup_children = (HTML(),)
+    if view_data_button is not None: popup_children += (view_data_button,)
     self.popup = Popup(
-      child = HTML(),
+      child = VBox(children=(popup_children)),
       min_width = 300, max_width = 500,
       auto_close = False, name = "Popup"
     )
     self.map.add_layer(self.popup)
+
+    # selected_geojson_data = dictionary with details (file path, feature with popup info, etc.) about the hovered/clicked GeoJSON
+    self.selected_geojson_data = {}
 
     # geojsons = {name1: GeoJSON1, name2: GeoJSON2, ...} dictionary to store all data that was read from data files
     self.geojsons = {
@@ -92,6 +97,9 @@ class DataMap:
           elif style_name == "point_style": placeholder_geojson.point_style = style_val
           elif style_name == "hover_style": placeholder_geojson.hover_style = style_val
       self.map.add_layer(placeholder_geojson)
+
+    # plotter = instance of the DataPlotter class, which creates plots with given data
+    self.plotter = DataPlotter()
 
   def get_existing_property(self, possible_prop_names_and_units: dict, feature_info: dict) -> str:
     """
@@ -151,8 +159,8 @@ class DataMap:
     for col_name in possible_col_names:
       if col_name in dataframe:
         return dataframe[col_name]
-
-  def display_popup_info(self, popup_content: dict, feature: "geojson.Feature") -> None:
+  
+  def display_popup_info(self, popup_content: dict, feature: "geojson.Feature", data_file_path: str) -> None:
     """
     Opens the popup at the location of the hovered/clicked GeoJSON feature.
 
@@ -163,11 +171,18 @@ class DataMap:
           "Orthometric Height": [{"Ortho_Ht_m": "meters", "Ortho_ht_km": "kilometers", "ortho_ht_m": "meters"}]
         }
       feature (geojson.Feature): GeoJSON feature for the data point that had a mouse event
+      data_file_path (str): Path to the file containing the hovered/clicked GeoJSON feature
     """
+    # Save information about hovered/clicked GeoJSON feature.
+    self.selected_geojson_data["path"] = data_file_path
+    self.selected_geojson_data["feature"] = feature
+
+    # Create HTML for popup.
     self.popup.location = list(reversed(feature["geometry"]["coordinates"]))
-    self.popup.child.value = ""
+    popup_html = self.popup.child.children[0]
+    popup_html.value = ""
     for label, values in popup_content.items():
-      self.popup.child.value += "<b>{}</b> {}<br>".format(label, self.get_label_vals(values, feature["properties"]))
+      popup_html.value += "<b>{}</b> {}<br>".format(label, self.get_label_vals(values, feature["properties"]))
     self.popup.open_popup(location=self.popup.location)
   
   def create_geojson(self, data_path: str, name: str, popup_content: dict, longitude_col_names: list[str], latitude_col_names: list[str]) -> None:
@@ -203,8 +218,8 @@ class DataMap:
         # Assign the new GeoJSON data to its corresponding layer in order to display it on the map.
         layer.data = geojson
         # Add mouse event handlers.
-        layer.on_click(lambda feature, **kwargs: self.display_popup_info(popup_content, feature))
-        layer.on_hover(lambda feature, **kwargs: self.display_popup_info(popup_content, feature))
+        layer.on_click(lambda feature, **kwargs: self.display_popup_info(popup_content, feature, data_path))
+        layer.on_hover(lambda feature, **kwargs: self.display_popup_info(popup_content, feature, data_path))
         # Add GeoJSON layer to map and save it.
         self.all_layers[name] = layer
         self.geojsons[name] = geojson
