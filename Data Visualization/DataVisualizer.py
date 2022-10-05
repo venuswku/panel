@@ -58,7 +58,7 @@ class DataVisualizer:
     )
     self.map.add_layer(self.popup)
 
-    # selected_geojson_data = dictionary with details (file path, feature with popup info, etc.) about the hovered/clicked GeoJSON
+    # selected_geojson_data = dictionary with details (file path, layer name, feature with popup info, etc.) about the hovered/clicked GeoJSON
     self.selected_geojson_data = {}
 
     # geojsons = {name1: GeoJSON1, name2: GeoJSON2, ...} dictionary to store all data that was read from data files
@@ -145,7 +145,7 @@ class DataVisualizer:
         label_values += str(feature_info[val])
     return label_values
 
-  def get_dataframe_col(self, possible_col_names: list[str], dataframe: pd.DataFrame) -> pd.DataFrame:
+  def get_dataframe_col(self, possible_col_names: list[str], dataframe: "pandas.DataFrame") -> pd.DataFrame:
     """
     Gets the specified column of a dataframe.
 
@@ -160,7 +160,7 @@ class DataVisualizer:
       if col_name in dataframe:
         return dataframe[col_name]
   
-  def display_popup_info(self, popup_content: dict, feature: "geojson.Feature", data_file_path: str) -> None:
+  def display_popup_info(self, popup_content: dict, feature: "geojson.Feature", data_file_path: str, layer_name: str) -> None:
     """
     Opens the popup at the location of the hovered/clicked GeoJSON feature.
 
@@ -172,9 +172,11 @@ class DataVisualizer:
         }
       feature (geojson.Feature): GeoJSON feature for the data point that had a mouse event
       data_file_path (str): Path to the file containing the hovered/clicked GeoJSON feature
+      layer_name (str): Name of the hovered/clicked GeoJSON layer
     """
     # Save information about hovered/clicked GeoJSON feature.
     self.selected_geojson_data["path"] = data_file_path
+    self.selected_geojson_data["layer"] = layer_name
     self.selected_geojson_data["feature"] = feature
 
     # Create HTML for popup.
@@ -218,8 +220,22 @@ class DataVisualizer:
         # Assign the new GeoJSON data to its corresponding layer in order to display it on the map.
         layer.data = geojson
         # Add mouse event handlers.
-        layer.on_click(lambda feature, **kwargs: self.display_popup_info(popup_content, feature, data_path))
-        layer.on_hover(lambda feature, **kwargs: self.display_popup_info(popup_content, feature, data_path))
+        layer.on_click(
+          lambda feature, **kwargs: self.display_popup_info(
+            popup_content = popup_content,
+            feature = feature,
+            data_file_path = data_path,
+            layer_name = name
+          )
+        )
+        layer.on_hover(
+          lambda feature, **kwargs: self.display_popup_info(
+            popup_content = popup_content,
+            feature = feature,
+            data_file_path = data_path,
+            layer_name = name
+          )
+        )
         # Add GeoJSON layer to map and save it.
         self.all_layers[name] = layer
         self.geojsons[name] = geojson
