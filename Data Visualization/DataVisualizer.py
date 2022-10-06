@@ -160,7 +160,7 @@ class DataVisualizer:
       if col_name in dataframe:
         return dataframe[col_name]
   
-  def display_popup_info(self, popup_content: dict, feature: "geojson.Feature", data_file_path: str, layer_name: str) -> None:
+  def display_popup_info(self, popup_content: dict, feature: "geojson.Feature", data_file_path: str) -> None:
     """
     Opens the popup at the location of the hovered/clicked GeoJSON feature.
 
@@ -172,11 +172,9 @@ class DataVisualizer:
         }
       feature (geojson.Feature): GeoJSON feature for the data point that had a mouse event
       data_file_path (str): Path to the file containing the hovered/clicked GeoJSON feature
-      layer_name (str): Name of the hovered/clicked GeoJSON layer
     """
     # Save information about hovered/clicked GeoJSON feature.
     self.selected_geojson_data["path"] = data_file_path
-    self.selected_geojson_data["layer"] = layer_name
     self.selected_geojson_data["feature"] = feature
 
     # Create HTML for popup.
@@ -224,16 +222,14 @@ class DataVisualizer:
           lambda feature, **kwargs: self.display_popup_info(
             popup_content = popup_content,
             feature = feature,
-            data_file_path = data_path,
-            layer_name = name
+            data_file_path = data_path
           )
         )
         layer.on_hover(
           lambda feature, **kwargs: self.display_popup_info(
             popup_content = popup_content,
             feature = feature,
-            data_file_path = data_path,
-            layer_name = name
+            data_file_path = data_path
           )
         )
         # Add GeoJSON layer to map and save it.
