@@ -48,6 +48,9 @@ Panel
 - [Modifying Markers in Scatter Plot](https://docs.bokeh.org/en/2.4.0/docs/user_guide/data.html#mapping-marker-types)
 - [`scatter()` to Use Built-In Markers](https://docs.bokeh.org/en/latest/docs/reference/models/glyphs/scatter.html)
 
+`pandas`
+- [Filtering through DataFrame with `.loc`](https://pandas.pydata.org/docs/reference/api/pandas.DataFrame.loc.html)
+
 Other Documentation
 - [`ipyleaflet`](https://ipyleaflet.readthedocs.io/en/latest/index.html)
 - [`datetime`](https://docs.python.org/3/library/datetime.html#datetime-objects)

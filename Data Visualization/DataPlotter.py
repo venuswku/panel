@@ -9,7 +9,7 @@ import os
 class DataPlotter:
   def __init__(self):
     # Create placeholder plots with no data so that it can be updated in a Panel modal later.
-    self.time_series = figure(title = "Time-Series", x_axis_type = "datetime", tools = "hover")
+    self.time_series = figure(title = "Time-Series", x_axis_type = "datetime")
     # self.time_series_hover_tool = HoverTool()
     # self.time_series.add_tools(self.time_series_hover_tool)
 
@@ -56,35 +56,43 @@ class DataPlotter:
     self.time_series.yaxis.axis_label = y_axis_label
     
     # Get all data for different categories of data, which should be subfolders in the given data_path.
-    data_categories = [file for file in os.listdir(data_path) if os.path.isdir(file)]
-    
+    data_categories = [file for file in os.listdir(data_path) if os.path.isdir(data_path + "/" + file)]
+
     # Update the time-series scatter plot with the data from the given data_path.
-    rounded_lat, rounded_long = round(latitude, 4), round(longitude, 4)
+    max_decimals = 5
+    rounded_lat, rounded_long = round(latitude, max_decimals), round(longitude, max_decimals)
+    self.time_series.title.text = "Time Series for {} (Latitude), {} (Longitude)".format(rounded_lat, rounded_long)
     for category in data_categories:
       data_category_path = data_path + "/" + category
       data_category_files = os.listdir(data_category_path)
       for file in data_category_files:
         # Only plot data that are collected at the same latitude and longitude as the given lat-long coordinates.
         dataframe = pd.read_csv(data_category_path + "/" + file)
-        
-        [latitude_col_name] = [col_name for col_name in possible_lat_col_names if col_name in dataframe.columns]
-        [longitude_col_name] = [col_name for col_name in possible_long_col_names if col_name in dataframe.columns]
-        dataframe = dataframe[(round(dataframe[latitude_col_name], 4) == rounded_lat) & (round(dataframe[longitude_col_name], 4) == rounded_long)]
-        
-        [datetime_col_name] = [col_name for col_name in possible_datetime_col_names if col_name in dataframe.columns]
-        [y_axis_col_name] = [col_name for col_name in possible_y_axis_col_names if col_name in dataframe.columns]
-        dataframe[datetime_col_name] = pd.to_datetime(dataframe[datetime_col_name])
-        data_source = ColumnDataSource(dataframe)
-        
-        self.time_series.scatter(
-          x = datetime_col_name,
-          y = y_axis_col_name,
-          source = data_source,
-          legend_label = category,
-          color = data_category_colors[category],
-          size = 12, fill_alpha = 0.4,
-          # marker = factor_mark("species", MARKERS, SPECIES)
-        )
+        existing_y_axis_col_names = [col_name for col_name in possible_y_axis_col_names if col_name in dataframe.columns]
+        if len(existing_y_axis_col_names) > 0:
+          # Filter for data with the given lat-long coordinates when rounded.
+          [latitude_col_name] = [col_name for col_name in possible_lat_col_names if col_name in dataframe.columns]
+          [longitude_col_name] = [col_name for col_name in possible_long_col_names if col_name in dataframe.columns]
+          dataframe = dataframe.loc[(round(dataframe[latitude_col_name], max_decimals) == rounded_lat) & (round(dataframe[longitude_col_name], max_decimals) == rounded_long)]
+          
+          # Only display non-empty filtered dataframes.
+          if len(dataframe.index) > 0:
+            # Convert the filtered dataframe into ColumnDataSource, which is compatible for plotting.
+            [datetime_col_name] = [col_name for col_name in possible_datetime_col_names if col_name in dataframe.columns]
+            y_axis_col_name = existing_y_axis_col_names[0]
+            dataframe[datetime_col_name] = pd.to_datetime(dataframe[datetime_col_name])
+            data_source = ColumnDataSource(dataframe)
+            
+            # Plot the filtered data.
+            self.time_series.scatter(
+              x = datetime_col_name,
+              y = y_axis_col_name,
+              source = data_source,
+              legend_label = category,
+              color = data_category_colors[category],
+              size = 12, fill_alpha = 0.4,
+              # marker = factor_mark("species", MARKERS, SPECIES)
+            )
 
     # # Set tooltips for the plot's data points on hover.
     # self.set_hover_tooltip(
