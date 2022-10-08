@@ -4,53 +4,51 @@ from ipywidgets import Layout, HTML, VBox
 import pandas as pd
 import geopandas
 import json
+import os
+import random
+from bokeh.palettes import Category20
 import math
 from DataPlotter import DataPlotter
 
+default_geojson_hover_color = "#2196f3"
 empty_geojson_name = "no_data"
 
 class DataVisualizer:
-  def __init__(self, data: dict, map_center: tuple = (0, 0), basemap_options: dict = {"Default": basemaps.OpenStreetMap.Mapnik}, view_data_button: "ipywidgets.Button" = None, legend: dict = None) -> None:
+  def __init__(self, data_dir_path: str, map_center: tuple = (0, 0), category_styles: dict = {}, data_details_button: "ipywidgets.Button" = None, basemap_options: dict = {"Default": basemaps.OpenStreetMap.Mapnik}, legend_name: str = "") -> None:
     """
     Creates a new instance of the DataVisualizer class with its instance variables.
 
     Args:
-      data (dict): Dictionary mapping names of data files (keys) to their optional styling on a GeoJSON layer (values)
+      data_dir_path (str): Path to the directory containing all the data category subfolders and their data files
+      map_center (tuple): Optional (Latitude, Longitude) tuple specifying the center of the map
+      category_styles (dict): Optional dictionary mapping names of data categories (keys) to their optional styling on a GeoJSON layer (values)
         ^ e.g. {
-          "file1.csv": {
+          "category1": {
             "point_style": {"opacity": 0.5, "radius": 1},
             "hover_style": {"color": "blue", "radius": 2}
           },
-          "file2.txt": {
+          "category2": {
             "style": {"color": "black", "opacity": 0.5, "radius": 1},
             "hover_style": {"color": "red", "opacity": 1, "radius": 2}
-          },
-          "file3.txt": {}     # empty dictionary keeps ipyleaflet's default feature styling
+          }
         }
-        ^ Make sure keys in data[file] match a GeoJSON attribute (https://ipyleaflet.readthedocs.io/en/latest/layers/geo_json.html#attributes-and-methods) and values are dictionaries {}.
-      map_center (tuple): Optional (Latitude, Longitude) tuple specifying the center of the map
+        ^ Make sure keys in data[data_category] match a GeoJSON attribute (https://ipyleaflet.readthedocs.io/en/latest/layers/geo_json.html#attributes-and-methods) and values are dictionaries {}.
+      data_details_button ("ipywidgets.Button"): Optional button displayed in the popup of a hovered/clicked data point
       basemap_options (dict): Optional dictionary mapping basemap names (keys) to basemap layers (values)
-      view_data_button ("ipywidgets.Button"): Optional button displayed in the popup of a hovered/clicked data point
+      legend_name (str): Optional name for the map legend, default empty string means that no title will be displayed in the legend
     """
     # map = map containing data that user wants to visualize
     self.map = Map(
       center = map_center,
       zoom = 15, max_zoom = 18, layout = Layout(height="calc(100vh - 94px)")
     )
-    if legend is not None:
-      self.map.add_control(
-        LegendControl(
-          name = legend["name"],
-          position = "bottomright",
-          legend = legend["colors"]
-        )
-      )
+  
     self.map.add_control(FullScreenControl())
     self.map.add_control(LayersControl(position="topright"))
 
     # popup = popup that displays information about a data point
     popup_children = (HTML(),)
-    if view_data_button is not None: popup_children += (view_data_button,)
+    if data_details_button is not None: popup_children += (data_details_button,)
     self.popup = Popup(
       child = VBox(children=(popup_children)),
       min_width = 300, max_width = 500,
@@ -88,18 +86,51 @@ class DataVisualizer:
     
     # Add placeholder layers for all data files to the map (initially no features) since new map layers currently can't be added once map is rendered on Panel app.
     # ^ Will modify GeoJSON layer's `data` attribute when its data needs to be displayed.
-    for file, styling in data.items():
-      placeholder_geojson = GeoJSON(data = self.geojsons[empty_geojson_name], name = file)
-      style_attributes = ["style", "point_style", "hover_style"]
-      for style_name, style_val in styling.items():
-        if style_name in style_attributes:
-          if style_name == "style": placeholder_geojson.style = style_val
-          elif style_name == "point_style": placeholder_geojson.point_style = style_val
-          elif style_name == "hover_style": placeholder_geojson.hover_style = style_val
-      self.map.add_layer(placeholder_geojson)
-
+    legend_colors, palette_colors = {}, Category20[20]
+    data_categories = [file for file in os.listdir(data_dir_path) if os.path.isdir(data_dir_path + "/" + file)]
+    total_palette_colors, total_categories = len(palette_colors), len(data_categories)
+    for category in data_categories:
+      category_path = data_dir_path + "/" + category
+      category_files = [file for file in os.listdir(category_path)]
+      default_category_color = random.choice(palette_colors)
+      # Assign category to a unique color if possible (total_categories < total_palette_colors means there's enough palette colors for all categories to have a unique color).
+      while (total_categories < total_palette_colors) and (default_category_color in legend_colors.values()):
+        default_category_color = legend_colors[category] = random.choice(palette_colors)
+      legend_colors[category] = default_category_color
+      for file in category_files:
+        placeholder_geojson = GeoJSON(data = self.geojsons[empty_geojson_name], name = file)
+        # Initially set GeoJSON layer to a color from the D3 palette named Category20.
+        placeholder_geojson.point_style = {"color": default_category_color, "opacity": 0.5, "fillColor": default_category_color, "fillOpacity": 0.3, "radius": 8, "weight": 1, "dashArray": 2}
+        placeholder_geojson.hover_style = {"color": default_geojson_hover_color, "fillColor": default_geojson_hover_color, "weight": 3}
+        # Set any custom styles.
+        geojson_style_attributes = ["style", "point_style", "hover_style"]
+        if category in category_styles:
+          category_custom_style = category_styles[category]
+          for style_attr, style_val in category_custom_style.items():
+            if style_attr in geojson_style_attributes:
+              if style_attr == "style":
+                placeholder_geojson.style = style_val
+                if "color" in style_val: legend_colors[category] = style_val["color"]
+              elif style_attr == "point_style":
+                placeholder_geojson.point_style = style_val
+                if "color" in style_val: legend_colors[category] = style_val["color"]
+              elif style_attr == "hover_style":
+                placeholder_geojson.hover_style = style_val
+        # Add the placeholder GeoJSON layer to the map.
+        self.map.add_layer(placeholder_geojson)
+    
+    # Add a map legend if the GeoJSON data layers have different styling.
+    if len(legend_colors) > 1:
+      self.map.add_control(
+        LegendControl(
+          name = legend_name,
+          legend = legend_colors,
+          position = "bottomright"
+        )
+      )
+    
     # plotter = instance of the DataPlotter class, which creates plots with given data
-    self.plotter = DataPlotter()
+    self.plotter = DataPlotter(data_dir_path=data_dir_path, category_colors=legend_colors)
 
   def get_existing_property(self, possible_prop_names_and_units: dict, feature_info: dict) -> str:
     """
@@ -242,8 +273,7 @@ class DataVisualizer:
     # for (index, row) in dataframe.iterrows():
     #   marker_lat, marker_long = get_latitude(row), get_longitude(row)
     #   cluster_lat, cluster_long = round(marker_lat, 4), round(marker_long, 4)
-    #   marker = Marker(location=[marker_lat, marker_long], visible=
-    # False)
+    #   marker = Marker(location=[marker_lat, marker_long], visible=False)
     #   # Add new marker cluster to map when the coordinates don't belong to the current cluster.
     #   if (cluster_location is not None) and (not math.isclose(cluster_lat, cluster_location[0]) or not math.isclose(cluster_long, cluster_location[1])):
     #     # print("new cluster at " + str(cluster_location) + " is added to the map")

@@ -47,6 +47,7 @@ Panel
 - [Plotting `pandas` DataFrame with `bokeh.plotting`](https://programminghistorian.org/en/lessons/visualizing-with-bokeh#the-bokeh-columndatasource)
 - [Modifying Markers in Scatter Plot](https://docs.bokeh.org/en/2.4.0/docs/user_guide/data.html#mapping-marker-types)
 - [`scatter()` to Use Built-In Markers](https://docs.bokeh.org/en/latest/docs/reference/models/glyphs/scatter.html)
+- [`DatetimeTickFormatter` to Format Ticks on Plot Axes](https://docs.bokeh.org/en/2.4.1/docs/reference/models/formatters.html#datetimetickformatter)
 
 `pandas`
 - [Filtering through DataFrame with `.loc`](https://pandas.pydata.org/docs/reference/api/pandas.DataFrame.loc.html)
