@@ -56,7 +56,7 @@ class DataVisualizer:
     )
     self.map.add_layer(self.popup)
 
-    # selected_geojson_data = dictionary with details (file path, layer name, feature with popup info, etc.) about the hovered/clicked GeoJSON
+    # selected_geojson_data = dictionary with details (file path, feature with popup info, etc.) about the hovered/clicked GeoJSON feature
     self.selected_geojson_data = {}
 
     # geojsons = {name1: GeoJSON1, name2: GeoJSON2, ...} dictionary to store all data that was read from data files
