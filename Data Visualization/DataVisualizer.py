@@ -6,7 +6,7 @@ import geopandas
 import json
 import os
 import random
-from bokeh.palettes import Category20
+from bokeh.palettes import Bokeh
 import math
 from DataPlotter import DataPlotter
 
@@ -86,20 +86,18 @@ class DataVisualizer:
     
     # Add placeholder layers for all data files to the map (initially no features) since new map layers currently can't be added once map is rendered on Panel app.
     # ^ Will modify GeoJSON layer's `data` attribute when its data needs to be displayed.
-    legend_colors, palette_colors = {}, Category20[20]
+    legend_colors, palette_colors = {}, Bokeh[8]
     data_categories = [file for file in os.listdir(data_dir_path) if os.path.isdir(data_dir_path + "/" + file)]
-    total_palette_colors, total_categories = len(palette_colors), len(data_categories)
+    category_idx, total_palette_colors = 0, len(palette_colors)
     for category in data_categories:
       category_path = data_dir_path + "/" + category
       category_files = [file for file in os.listdir(category_path)]
-      default_category_color = random.choice(palette_colors)
-      # Assign category to a unique color if possible (total_categories < total_palette_colors means there's enough palette colors for all categories to have a unique color).
-      while (total_categories < total_palette_colors) and (default_category_color in legend_colors.values()):
-        default_category_color = legend_colors[category] = random.choice(palette_colors)
+      # Assign category to a default color.
+      default_category_color = palette_colors[category_idx % total_palette_colors]
       legend_colors[category] = default_category_color
       for file in category_files:
         placeholder_geojson = GeoJSON(data = self.geojsons[empty_geojson_name], name = file)
-        # Initially set GeoJSON layer to a color from the D3 palette named Category20.
+        # Initially set GeoJSON layer to a color from the Bokeh palette.
         placeholder_geojson.point_style = {"color": default_category_color, "opacity": 0.5, "fillColor": default_category_color, "fillOpacity": 0.3, "radius": 8, "weight": 1, "dashArray": 2}
         placeholder_geojson.hover_style = {"color": default_geojson_hover_color, "fillColor": default_geojson_hover_color, "weight": 3}
         # Set any custom styles.
@@ -118,6 +116,7 @@ class DataVisualizer:
                 placeholder_geojson.hover_style = style_val
         # Add the placeholder GeoJSON layer to the map.
         self.map.add_layer(placeholder_geojson)
+      category_idx += 1
     
     # Add a map legend if the GeoJSON data layers have different styling.
     if len(legend_colors) > 1:

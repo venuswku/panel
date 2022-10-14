@@ -33,7 +33,7 @@ class DataPlotter:
     # category_colors = dictionary mapping names of data categories (keys) to their corresponding color (values)
     self.category_colors = category_colors
 
-  def set_hover_tooltip(self, hover_tool: "bokeh.models.tools.HoverTool", tooltip_layout: dict, dataframe_cols: list[str], datetime_col: str = None) -> None:
+  def set_hover_tooltip(self, hover_tool: "bokeh.models.tools.HoverTool", tooltip_layout: dict, dataframe_cols: list[str]) -> None:
     """
     Set tooltips that appear when hovering over a data point to reflect the given tooltip layout if specified.
     
@@ -41,13 +41,10 @@ class DataPlotter:
       hover_tool (bokeh.models.tools.HoverTool): Hover tool to modify its tooltip
       tooltip_layout (dict): Either None or dictionary with labels that appear in a tooltip as keys and column names corresponding to their data as values
       dataframe_cols (list[str]): List of column names existing in the plotted dataframe, which is used for the tooltip layout if None was passed for the tooltip_layout argument
-      datetime_col (str): Optional name of the date or time column in the plotted dataframe, default is None
     """
     # Add all columns and their values from the data file to its tooltips.
     if tooltip_layout is not None: hover_tool.tooltips = [(label, "@" + col_name) for label, col_name in tooltip_layout.items()]
     else: hover_tool.tooltips = [(col, "@" + col) for col in dataframe_cols]
-    # If datetime_col is specified, add a datetime formatter for the date or time value to be readable.
-    if datetime_col is not None: hover_tool.formatters = {"@" + datetime_col: "datetime"}
 
   def plot_time_series(self, latitude: float, longitude: float, possible_lat_col_names, possible_long_col_names, possible_datetime_col_names: list[str], possible_y_axis_col_names: list[str], y_axis_label: str, x_axis_label: str = "Time") -> None:
     """
@@ -98,12 +95,15 @@ class DataPlotter:
             # Convert the filtered dataframe into ColumnDataSource, which is compatible for plotting.
             [datetime_col_name] = [col_name for col_name in possible_datetime_col_names if col_name in dataframe.columns]
             y_axis_col_name = existing_y_axis_col_names[0]
-            dataframe[datetime_col_name] = pd.to_datetime(dataframe[datetime_col_name])
+            # Save original dataframe columns before a new datetime objects column is added for the plot's x-axis.
+            dataframe_cols = dataframe.columns
+            x_axis_col_name = "datetime_objs"
+            dataframe[x_axis_col_name] = pd.to_datetime(dataframe[datetime_col_name])
             data_source = ColumnDataSource(dataframe)
             
             # Plot the filtered data.
             file_scatter_plot = self.time_series.scatter(
-              x = datetime_col_name,
+              x = x_axis_col_name,
               y = y_axis_col_name,
               source = data_source,
               legend_label = category,
@@ -114,13 +114,12 @@ class DataPlotter:
     
             # Add the corresponding tooltip for the file's data points on hover.
             file_hover_tool = HoverTool(renderers=[file_scatter_plot])
-            self.time_series.add_tools(file_hover_tool)
             self.set_hover_tooltip(
               hover_tool = file_hover_tool,
               tooltip_layout = None,
-              dataframe_cols = dataframe.columns,
-              datetime_col = datetime_col_name
+              dataframe_cols = dataframe_cols
             )
+            self.time_series.add_tools(file_hover_tool)
 
           # Get the average/mean y-axis value for each data file.
           # avg = dataframe[y_axis_col_name].mean()
@@ -132,7 +131,7 @@ class DataPlotter:
     self.time_series.legend.location = "bottom_right"
     self.time_series.legend.click_policy = "hide"     # clicking on a category in the legend hides its data
   
-  def plot_original_dataset(self, data_path: str, x_axis_col_name: str, y_axis_col_name: str, datetime_col_name: str, tooltip_vals: dict = None, x_axis_label: str = "Latitude", y_axis_label: str = "Longitude", data_point_color: str = "blue") -> None:
+  def plot_original_dataset(self, data_path: str, x_axis_col_name: str, y_axis_col_name: str, tooltip_vals: dict = None, x_axis_label: str = "Latitude", y_axis_label: str = "Longitude", data_point_color: str = "blue") -> None:
     """
     Plots original dataset from the given data path in a map plot.
 
@@ -140,7 +139,6 @@ class DataPlotter:
       data_path (str): Path to a directory containing data that needs to be plotted
       x_axis_col_name (str): Name of the column containing the latitude or some other data value that the user prefers for the x-axis
       y_axis_col_name (str): Name of the column containing the longitude or some other data value that the user prefers for the y-axis
-      datetime_col_name (str): Name of the column containing the date or time that the data was collected
       tooltip_vals (dict): Optional dictionary with labels that appear in a tooltip as keys and column names corresponding to their data as values
       x_axis_label (str): Optional name for the plot's x-axis, default is "Latitude"
       y_axis_label (str): Optional name for the plot's y-axis, default is "Longitude"
@@ -150,7 +148,8 @@ class DataPlotter:
     self.original_dataset.renderers = []
 
     # Update the scatter plot with the given data.
-    self.original_dataset.title.text = "Original Dataset that Data Point was Sampled From: {}".format(data_path)
+    path_components = data_path.split("/")
+    self.original_dataset.title.text = "Original Dataset that Data Point was Sampled From: {}".format(path_components[-1])
     dataframe = pd.read_csv(data_path)
     new_source = ColumnDataSource(dataframe)
     self.original_dataset.xaxis.axis_label = x_axis_label
@@ -166,8 +165,7 @@ class DataPlotter:
     self.set_hover_tooltip(
       hover_tool = self.original_dataset_hover_tool,
       tooltip_layout = tooltip_vals,
-      dataframe_cols = dataframe.columns,
-      datetime_col = datetime_col_name
+      dataframe_cols = dataframe.columns
     )
   
   def plot_data_point_details(self, data: dict, latitude_cols: list[str], longitude_cols: list[str], datetime_cols: list[str], y_axis_cols: list[str], y_axis_label: str) -> None:
@@ -209,6 +207,5 @@ class DataPlotter:
       data_path = path,
       x_axis_col_name = get_existing_col_name(latitude_cols, dataframe_cols),
       y_axis_col_name = get_existing_col_name(longitude_cols, dataframe_cols),
-      datetime_col_name = get_existing_col_name(datetime_cols, dataframe_cols),
       data_point_color = data_color
     )
