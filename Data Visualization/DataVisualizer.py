@@ -1,15 +1,18 @@
-from ipyleaflet import Map, basemaps, basemap_to_tiles, GeoJSON, Popup, LayersControl, FullScreenControl, LegendControl
+# Standard library imports
+import os
+import json
 from collections import defaultdict
-from ipywidgets import Layout, HTML, VBox
+import math
+
+# External dependencies imports
 import pandas as pd
 import geopandas
-import json
-import os
-import random
+from ipyleaflet import Map, basemaps, basemap_to_tiles, GeoJSON, Popup, LayersControl, FullScreenControl, LegendControl
+from ipywidgets import Layout, HTML, VBox
 from bokeh.palettes import Bokeh
-import math
 from DataPlotter import DataPlotter
 
+# Constants
 default_geojson_hover_color = "#2196f3"
 empty_geojson_name = "no_data"
 
@@ -266,24 +269,6 @@ class DataVisualizer:
         self.all_layers[name] = layer
         self.geojsons[name] = geojson
         break
-
-    # Group data from the same location into clusters.
-    # marker_cluster, cluster_location = MarkerCluster(name="Clusters"), None
-    # for (index, row) in dataframe.iterrows():
-    #   marker_lat, marker_long = get_latitude(row), get_longitude(row)
-    #   cluster_lat, cluster_long = round(marker_lat, 4), round(marker_long, 4)
-    #   marker = Marker(location=[marker_lat, marker_long], visible=False)
-    #   # Add new marker cluster to map when the coordinates don't belong to the current cluster.
-    #   if (cluster_location is not None) and (not math.isclose(cluster_lat, cluster_location[0]) or not math.isclose(cluster_long, cluster_location[1])):
-    #     # print("new cluster at " + str(cluster_location) + " is added to the map")
-    #     elwha_map.add_layer(marker_cluster)
-    #     marker_cluster, cluster_location = MarkerCluster(name="Clusters"), [cluster_lat, cluster_long]
-    #   # Else add marker to the current cluster.
-    #   else:
-    #     if cluster_location is None: cluster_location = [cluster_lat, cluster_long]
-    #     # print("marker at [" + str(marker_lat) + ", " + str(marker_long) + "] is added to the current cluster at " + str(cluster_location))
-    #     marker_cluster.markers += (marker,)
-    # elwha_map.add_layer(marker_cluster)     # need to add last marker cluster because last marker/row in dataframe will be added to last cluster but for loop never adds the cluster to the map
   
   def display_geojson(self, layer_name: str) -> None:
     """

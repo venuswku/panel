@@ -9,7 +9,7 @@ conda install "ipywidgets<8" -y
 conda install -c bokeh ipywidgets_bokeh -y
 conda install -c conda-forge panel -y
 # Install other optional dependencies for experimenting with Panel.
-conda install -c conda-forge ipyleaflet jupyter pandas geopandas -y
+conda install -c conda-forge ipyleaflet jupyter pandas geopandas leafmap localtileserver keplergl pydeck -y
 conda install -c pyviz hvplot bokeh -y
 ```
 
@@ -26,6 +26,7 @@ conda install -c pyviz hvplot bokeh -y
 - Make sure your Anaconda environment is activated by running `conda activate mypanelintro` in your terminal.
 - Run the command `jupyter notebook` in your terminal.
 - Open the `app.ipynb` file when a webpage with the URL http://localhost:8888/tree appears.
+  - Directly running `jupyter notebook app.ipynb` will skip this step of selecting a notebook to open.
 - Run all the notebook cells from top to bottom. The Panel app will be outputted after the last cell is run.
 - Reload the [`app.ipynb` webpage](http://localhost:8888/notebooks/app.ipynb) when you want to see your new changes.
 

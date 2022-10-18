@@ -1,10 +1,13 @@
+# Standard library imports
+import os
+import random
+
+# External dependencies imports
 import pandas as pd
-from bokeh.tile_providers import get_provider, ESRI_IMAGERY
 from bokeh.models import ColumnDataSource, DatetimeTickFormatter
 from bokeh.plotting import figure
 from bokeh.models.tools import HoverTool
-import os
-import random
+from bokeh.tile_providers import get_provider, ESRI_IMAGERY
 
 class DataPlotter:
   def __init__(self, data_dir_path: str, category_colors: dict) -> None:
@@ -59,15 +62,12 @@ class DataPlotter:
       dict: Dictionary mapping the given dataframe's column names (keys) to their valid column names (values)
     """
     col_names = {}
-    fixed_col_names = {}
     for col in cols:
       # Removes any invalid characters from each column name.
       valid_col = "".join(col.split())
       for invalid_char in "@!#$%^&*'-+=()<>?/\|{}[]~.,:;":
         valid_col = valid_col.replace(invalid_char, "")
       col_names[col] = valid_col
-      # Save new column name to fixed_col_names dictionary.
-      if valid_col != col: fixed_col_names[col] = valid_col
     dataframe.rename(columns = col_names, inplace = True)
     return col_names
 
@@ -88,6 +88,9 @@ class DataPlotter:
     # Clear the scatter plot and data tooltips (keep default tools).
     self.time_series.renderers = []
     self.time_series.toolbar.tools = self.time_series.toolbar.tools[:6]
+    self.time_series.legend.items = []
+    # # When the modal is closed, reset the visibility of glyphs using the legend.
+    # self.time_series.legend.click_policy = "none"
     
     # Set x and y axis labels.
     self.time_series.xaxis.axis_label = x_axis_label
@@ -149,12 +152,6 @@ class DataPlotter:
               tooltip_layout = col_dict
             )
             self.time_series.add_tools(file_hover_tool)
-
-          # Get the average/mean y-axis value for each data file.
-          # avg = dataframe[y_axis_col_name].mean()
-          # for renderer in self.time_series.renderers:
-          #   if hasattr(renderer, "glyph"):
-          #     print(renderer.data_source.data)
     
     # Customize plot's legend after adding data to scatter plot implicitly creates legend.
     self.time_series.legend.location = "bottom_right"
